@@ -19,7 +19,17 @@ class AppViewModel(
     progressController: ProgressController,
     sessionStore: SessionStore
 ) : ViewModel() {
-    val loading = progressController.loading
+    val loading = progressController.loading.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
+
+    val busy = progressController.busy.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false
+    )
 
     // null = session state not yet loaded; the splash screen stays visible until it resolves
     val loggedIn: StateFlow<Boolean?> = sessionStore.loggedInFlow.stateIn(

@@ -5,13 +5,16 @@ import androidx.compose.runtime.Stable
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
@@ -21,9 +24,33 @@ import kotlin.time.TimeSource
 class ProgressController {
     private val mutex = Mutex()
     private val active = mutableListOf<LoadingState>()
+    private val current = MutableStateFlow<LoadingState?>(null)
 
-    private val _loading = MutableStateFlow<LoadingState?>(null)
-    val loading = _loading.asStateFlow()
+    // undelayed; blocks input while the dialog is still in its show delay
+    val busy: Flow<Boolean> = current.map { it != null }.distinctUntilChanged()
+
+    // anti-flicker: appears only after ShowDelay, then stays visible for at least MinShowTime
+    val loading: Flow<LoadingState?> = flow {
+        var shownAt: TimeSource.Monotonic.ValueTimeMark? = null
+        emitAll(
+            current.transformLatest { state ->
+                if (state == null) {
+                    shownAt?.let { mark ->
+                        val remaining = MinShowTime - mark.elapsedNow()
+                        if (remaining.isPositive()) delay(remaining)
+                    }
+                    shownAt = null
+                    emit(null)
+                } else {
+                    if (shownAt == null) {
+                        delay(ShowDelay)
+                        shownAt = TimeSource.Monotonic.markNow()
+                    }
+                    emit(state)
+                }
+            }
+        )
+    }
 
     suspend fun <T> loadWithProgress(
         label: String? = null,
@@ -34,22 +61,14 @@ class ProgressController {
         )
         mutex.withLock {
             active += state
-            _loading.value = state
+            current.value = state
         }
-        val start = TimeSource.Monotonic.markNow()
         return try {
-            block().also {
-                val remaining = 100.milliseconds - start.elapsedNow()
-                if (remaining > 50.milliseconds) {
-                    delay(remaining)
-                }
-            }
+            block()
         } finally {
-            withContext(NonCancellable) {
-                mutex.withLock {
-                    active -= state
-                    _loading.value = active.lastOrNull()
-                }
+            mutex.withLock {
+                active -= state
+                current.value = active.lastOrNull()
             }
         }
     }
@@ -58,4 +77,9 @@ class ProgressController {
     data class LoadingState(
         val label: String? = null
     )
+
+    private companion object {
+        val ShowDelay = 150.milliseconds
+        val MinShowTime = 500.milliseconds
+    }
 }
