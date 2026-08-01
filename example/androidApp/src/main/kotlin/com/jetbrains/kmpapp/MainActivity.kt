@@ -13,10 +13,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.layout.WindowMetricsCalculator
 import androidx.window.layout.adapter.computeWindowSizeClass
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.Instant
+import kotlin.time.Duration.Companion.seconds
 
 class MainActivity : ComponentActivity() {
 
@@ -46,7 +50,7 @@ class MainActivity : ComponentActivity() {
         val end: Instant = Instant.now().plusMillis(400)
         val content: View = findViewById(android.R.id.content)
 
-        content.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+        val listener = object : ViewTreeObserver.OnPreDrawListener {
             override fun onPreDraw(): Boolean {
                 val timeDone = Instant.now() >= end
                 val sessionLoaded = viewModel.loggedIn.value != null
@@ -54,7 +58,14 @@ class MainActivity : ComponentActivity() {
                     if (done) content.viewTreeObserver.removeOnPreDrawListener(this)
                 }
             }
-        })
+        }
+        content.viewTreeObserver.addOnPreDrawListener(listener)
+        // upper bound, so a stalled session read cannot hold the splash forever
+        lifecycleScope.launch {
+            delay(5.seconds)
+            content.viewTreeObserver.removeOnPreDrawListener(listener)
+            content.invalidate()
+        }
     }
 
     private fun addConfigurationChangedViewHook() {
@@ -71,13 +82,8 @@ class MainActivity : ComponentActivity() {
 
     private fun updateOrientation() {
         val metrics = WindowMetricsCalculator.getOrCreate().computeMaximumWindowMetrics(this)
-        val windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(metrics)
+        val windowSizeClass = WindowSizeClass.BREAKPOINTS_V2.computeWindowSizeClass(metrics)
         requestedOrientation = when {
-            windowSizeClass.isAtLeastBreakpoint(
-                widthDpBreakpoint = WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
-                heightDpBreakpoint = WindowSizeClass.HEIGHT_DP_EXPANDED_LOWER_BOUND
-            ) -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-
             windowSizeClass.isAtLeastBreakpoint(
                 widthDpBreakpoint = WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND,
                 heightDpBreakpoint = WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND

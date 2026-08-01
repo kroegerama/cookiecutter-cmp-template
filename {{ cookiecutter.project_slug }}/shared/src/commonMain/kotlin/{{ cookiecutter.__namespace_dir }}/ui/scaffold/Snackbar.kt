@@ -3,6 +3,7 @@ package {{ cookiecutter.namespace }}.ui.scaffold
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,17 +30,35 @@ data class SnackbarVisuals(
     override val actionLabel: String? = null,
     override val withDismissAction: Boolean = false,
     override val duration: SnackbarDuration = SnackbarDuration.Short,
-    val containerColor: Color = Color.DarkGray,
-    val contentColor: Color = Color.White
-) : androidx.compose.material3.SnackbarVisuals
+    val semantics: SnackbarSemantics = SnackbarSemantics.Default
+) : androidx.compose.material3.SnackbarVisuals {
+    enum class SnackbarSemantics(
+        val containerColor: @Composable () -> Color = { SnackbarDefaults.color },
+        val contentColor: @Composable () -> Color = { SnackbarDefaults.contentColor },
+        val actionColor: @Composable () -> Color = { SnackbarDefaults.actionColor },
+        val actionContentColor: @Composable () -> Color = { SnackbarDefaults.actionContentColor },
+    ) {
+        Default,
+        Success(
+//            containerColor = { MaterialTheme.colorScheme.success },
+//            contentColor = { MaterialTheme.colorScheme.onSuccess },
+//            actionColor = { },
+//            actionContentColor = { },
+        ),
+        Error(
+            containerColor = { MaterialTheme.colorScheme.errorContainer },
+            contentColor = { MaterialTheme.colorScheme.onErrorContainer },
+            actionColor = { MaterialTheme.colorScheme.error },
+            actionContentColor = { MaterialTheme.colorScheme.onError },
+        )
+    }
+}
 
 @SingleIn(AppScope::class)
 @Inject
 @Stable
 class SnackbarController {
     private val channel: Channel<SnackbarVisuals> = Channel(Channel.CONFLATED)
-    private var successColor: Color = Color.DarkGray
-    private var onSuccessColor: Color = Color.White
 
     suspend fun showSuccess(messageRes: StringResource) =
         showSuccess(getString(messageRes))
@@ -48,18 +67,14 @@ class SnackbarController {
         channel.trySend(
             SnackbarVisuals(
                 message = message,
-                containerColor = successColor,
-                contentColor = onSuccessColor
+                semantics = SnackbarVisuals.SnackbarSemantics.Success
             )
         )
     }
 
     @Composable
     fun LaunchSnackbarEffect(snackbarHostState: SnackbarHostState) {
-        val colorScheme = MaterialTheme.colorScheme
         LaunchedEffect(this, snackbarHostState) {
-            successColor = colorScheme.inverseSurface
-            onSuccessColor = colorScheme.inverseOnSurface
             channel.receiveAsFlow().collectLatest { visuals ->
                 snackbarHostState.showSnackbar(visuals)
             }
@@ -75,8 +90,10 @@ fun AppSnackbarHost(snackbarHostState: SnackbarHostState) {
         when (val visuals = data.visuals) {
             is SnackbarVisuals -> Snackbar(
                 snackbarData = data,
-                containerColor = visuals.containerColor,
-                contentColor = visuals.contentColor,
+                containerColor = visuals.semantics.containerColor(),
+                contentColor = visuals.semantics.contentColor(),
+                actionColor = visuals.semantics.actionColor(),
+                actionContentColor = visuals.semantics.actionContentColor(),
                 modifier = Modifier.safeDrawingPadding()
             )
 

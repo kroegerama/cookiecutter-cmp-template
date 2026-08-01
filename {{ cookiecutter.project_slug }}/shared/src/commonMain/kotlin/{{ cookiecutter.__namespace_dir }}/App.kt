@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreProvider
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
@@ -181,8 +182,12 @@ private fun SharedTransitionScope.LoggedInContent(
             NavigationItems.entries.forEach { nav ->
                 NavigationSuiteItem(
                     selected = navigationState.topLevelRoute == nav.route,
-                    onClick = {
-                        navigator.navigate(nav.route)
+                    onClick = dropUnlessResumed {
+                        if (navigationState.topLevelRoute == nav.route) {
+                            navigator.resetStack()
+                        } else {
+                            navigator.navigate(nav.route)
+                        }
                     },
                     icon = { Icon(nav.icon, nav.label()) },
                     label = { Text(nav.label()) }
