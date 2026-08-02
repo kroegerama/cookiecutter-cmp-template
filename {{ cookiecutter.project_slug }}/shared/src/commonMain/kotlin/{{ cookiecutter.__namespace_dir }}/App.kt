@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.recalculateWindowInsets
 import androidx.compose.material3.ExperimentalMaterial3ComponentOverrideApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
@@ -57,7 +56,7 @@ import {{ cookiecutter.namespace }}.ui.navigation.rememberRouteNavBackStack
 import {{ cookiecutter.namespace }}.ui.navigation.rememberSceneDecorator
 import {{ cookiecutter.namespace }}.ui.navigation.rootEntryProvider
 import {{ cookiecutter.namespace }}.ui.navigation.toEntries
-import {{ cookiecutter.namespace }}.ui.scaffold.AppSnackbarHost
+import {{ cookiecutter.namespace }}.ui.scaffold.AppSnackbarController
 import {{ cookiecutter.namespace }}.ui.scaffold.LocalSharedTransitionScope
 import {{ cookiecutter.namespace }}.ui.scaffold.LocalSnackbarController
 import {{ cookiecutter.namespace }}.ui.theme.AppTheme
@@ -65,6 +64,7 @@ import com.kroegerama.kmp.kaiteki.compose.navigation.rememberAlertDialogSceneStr
 import com.kroegerama.kmp.kaiteki.compose.navigation.rememberBottomSheetSceneStrategy
 import com.kroegerama.kmp.kaiteki.compose.navigation.rememberScaffoldSceneDecorator
 import com.kroegerama.kmp.kaiteki.compose.platform.rememberCustomTabsUriHandler
+import com.kroegerama.kmp.kaiteki.compose.scaffold.StyledSnackbarHost
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -78,9 +78,7 @@ fun App() {
 
         val uriHandler = rememberCustomTabsUriHandler()
 
-        val snackbarHostState = remember { SnackbarHostState() }
         val snackbarController = Init.appGraph.snackbarController
-        snackbarController.LaunchSnackbarEffect(snackbarHostState)
 
         val loggedIn by viewModel.loggedIn.collectAsStateWithLifecycle()
         val loadingState by viewModel.loading.collectAsStateWithLifecycle()
@@ -102,12 +100,12 @@ fun App() {
                         ) { state ->
                             if (state) {
                                 LoggedInContent(
-                                    snackbarHostState = snackbarHostState,
+                                    snackbarController = snackbarController,
                                     adaptiveInfo = adaptiveInfo
                                 )
                             } else {
                                 LoginContent(
-                                    snackbarHostState = snackbarHostState,
+                                    snackbarController = snackbarController,
                                     adaptiveInfo = adaptiveInfo
                                 )
                             }
@@ -144,7 +142,7 @@ private fun InputBlocker() {
 
 @Composable
 private fun SharedTransitionScope.LoginContent(
-    snackbarHostState: SnackbarHostState,
+    snackbarController: AppSnackbarController,
     adaptiveInfo: WindowAdaptiveInfo
 ) {
     val backStack = rememberRouteNavBackStack(LoginNavKey.Login)
@@ -160,7 +158,7 @@ private fun SharedTransitionScope.LoginContent(
     )
 
     NavScaffold(
-        snackbarHostState = snackbarHostState,
+        snackbarController = snackbarController,
         adaptiveInfo = adaptiveInfo,
         entries = navEntries,
         onBack = { if (backStack.size > 1) backStack.removeLastOrNull() }
@@ -169,7 +167,7 @@ private fun SharedTransitionScope.LoginContent(
 
 @Composable
 private fun SharedTransitionScope.LoggedInContent(
-    snackbarHostState: SnackbarHostState,
+    snackbarController: AppSnackbarController,
     adaptiveInfo: WindowAdaptiveInfo
 ) {
     val navigationState = rememberNavigationState(
@@ -217,7 +215,7 @@ private fun SharedTransitionScope.LoggedInContent(
         }
     ) {
         NavScaffold(
-            snackbarHostState = snackbarHostState,
+            snackbarController = snackbarController,
             adaptiveInfo = adaptiveInfo,
             entries = entries,
             onBack = navigator::goBack,
@@ -229,7 +227,7 @@ private fun SharedTransitionScope.LoggedInContent(
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun SharedTransitionScope.NavScaffold(
-    snackbarHostState: SnackbarHostState,
+    snackbarController: AppSnackbarController,
     adaptiveInfo: WindowAdaptiveInfo,
     entries: List<NavEntry<Route>>,
     onBack: () -> Unit,
@@ -244,7 +242,7 @@ private fun SharedTransitionScope.NavScaffold(
 
     Scaffold(
         snackbarHost = {
-            AppSnackbarHost(snackbarHostState)
+            StyledSnackbarHost(snackbarController)
         },
         contentWindowInsets = WindowInsets(),
         modifier = Modifier

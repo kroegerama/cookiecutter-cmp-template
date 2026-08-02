@@ -23,7 +23,7 @@ import {{ cookiecutter.namespace }}.resources.Res
 import {{ cookiecutter.namespace }}.resources.greeting
 import {{ cookiecutter.namespace }}.ui.navigation.Navigator
 import {{ cookiecutter.namespace }}.ui.navigation.RootNavKey
-import {{ cookiecutter.namespace }}.ui.scaffold.SnackbarController
+import {{ cookiecutter.namespace }}.ui.scaffold.AppSnackbarController
 import {{ cookiecutter.namespace }}.ui.theme.AppTheme
 import {{ cookiecutter.namespace }}.ui.theme.dimensions
 import com.kroegerama.kmp.kaiteki.compose.components.ButtonMedium
@@ -115,14 +115,14 @@ private fun StartScreenContent(
 @ContributesIntoMap(AppScope::class)
 class StartScreenViewModel(
     private val progressController: ProgressController,
-    private val snackbarController: SnackbarController,
+    private val snackbarController: AppSnackbarController,
     private val sessionStore: SessionStore
 ) : ViewModel() {
     fun performProgress() {
         viewModelScope.launch {
             progressController.loadWithProgress {
                 delay(1000.milliseconds)
-                snackbarController.showSuccess("Success!!!")
+                snackbarController.show("Success!!!")
             }
         }
     }

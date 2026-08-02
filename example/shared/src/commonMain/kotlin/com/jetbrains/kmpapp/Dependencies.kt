@@ -2,7 +2,7 @@ package com.jetbrains.kmpapp
 
 import androidx.lifecycle.ViewModel
 import com.jetbrains.kmpapp.api.ApiInitializer
-import com.jetbrains.kmpapp.ui.scaffold.SnackbarController
+import com.jetbrains.kmpapp.ui.scaffold.AppSnackbarController
 import com.kroegerama.kmp.kaiteki.Initializer
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 interface AppGraph : ViewModelGraph {
     val initializers: Set<Initializer>
     val apiInitializer: ApiInitializer
-    val snackbarController: SnackbarController
+    val snackbarController: AppSnackbarController
 }
 
 @Inject

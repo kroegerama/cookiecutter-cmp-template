@@ -23,7 +23,7 @@ import com.jetbrains.kmpapp.resources.Res
 import com.jetbrains.kmpapp.resources.greeting
 import com.jetbrains.kmpapp.ui.navigation.Navigator
 import com.jetbrains.kmpapp.ui.navigation.RootNavKey
-import com.jetbrains.kmpapp.ui.scaffold.SnackbarController
+import com.jetbrains.kmpapp.ui.scaffold.AppSnackbarController
 import com.jetbrains.kmpapp.ui.theme.AppTheme
 import com.jetbrains.kmpapp.ui.theme.dimensions
 import com.kroegerama.kmp.kaiteki.compose.components.ButtonMedium
@@ -115,14 +115,14 @@ private fun StartScreenContent(
 @ContributesIntoMap(AppScope::class)
 class StartScreenViewModel(
     private val progressController: ProgressController,
-    private val snackbarController: SnackbarController,
+    private val snackbarController: AppSnackbarController,
     private val sessionStore: SessionStore
 ) : ViewModel() {
     fun performProgress() {
         viewModelScope.launch {
             progressController.loadWithProgress {
                 delay(1000.milliseconds)
-                snackbarController.showSuccess("Success!!!")
+                snackbarController.show("Success!!!")
             }
         }
     }
