@@ -60,6 +60,7 @@ import {{ cookiecutter.namespace }}.ui.scaffold.AppSnackbarController
 import {{ cookiecutter.namespace }}.ui.scaffold.LocalSharedTransitionScope
 import {{ cookiecutter.namespace }}.ui.scaffold.LocalSnackbarController
 import {{ cookiecutter.namespace }}.ui.theme.AppTheme
+import {{ cookiecutter.namespace }}.ui.theme.rememberNavigationTransitionSpecs
 import com.kroegerama.kmp.kaiteki.compose.navigation.rememberAlertDialogSceneStrategy
 import com.kroegerama.kmp.kaiteki.compose.navigation.rememberBottomSheetSceneStrategy
 import com.kroegerama.kmp.kaiteki.compose.navigation.rememberScaffoldSceneDecorator
@@ -239,6 +240,7 @@ private fun SharedTransitionScope.NavScaffold(
     val listDetailSceneStrategy = rememberListDetailSceneStrategy<Route>(
         directive = directive,
     )
+    val animationSpecs = rememberNavigationTransitionSpecs<Route>()
 
     Scaffold(
         snackbarHost = {
@@ -258,6 +260,9 @@ private fun SharedTransitionScope.NavScaffold(
             ),
             sceneDecoratorStrategies = sceneDecoratorStrategies,
             sharedTransitionScope = this@NavScaffold,
+            transitionSpec = animationSpecs.push,
+            popTransitionSpec = animationSpecs.pop,
+            predictivePopTransitionSpec = animationSpecs.predictivePop,
             onBack = onBack,
             modifier = Modifier
                 .padding(innerPadding)
