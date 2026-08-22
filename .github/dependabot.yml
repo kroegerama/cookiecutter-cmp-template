@@ -13,6 +13,7 @@ updates:
         - "com.android*"
         - "com.google*"
         - "com.kroegerama*"
+        - "org.jetbrains*"
     groups:
       kotlin:
         patterns:
