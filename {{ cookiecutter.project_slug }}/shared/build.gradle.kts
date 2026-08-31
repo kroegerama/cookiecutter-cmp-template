@@ -10,6 +10,10 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+
     compilerOptions {
         optIn.addAll(
             "kotlin.uuid.ExperimentalUuidApi",
@@ -39,7 +43,11 @@ kotlin {
         enableCoreLibraryDesugaring = true
     }
 
-    jvm()
+    jvm {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_21
+        }
+    }
 
 //    swiftPMDependencies {
 //        swiftPackage(
