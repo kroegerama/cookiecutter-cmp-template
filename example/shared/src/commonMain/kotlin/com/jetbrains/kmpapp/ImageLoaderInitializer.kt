@@ -4,12 +4,15 @@ import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.useExistingImageAsPlaceholder
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import coil3.util.DebugLogger
 import com.jetbrains.kmpapp.api.ImageClient
 import com.jetbrains.kmpapp.core.AppInitializer
 import com.jetbrains.kmpapp.core.PlatformConfig
+import com.kroegerama.kmp.kaiteki.PlatformContext
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
@@ -21,6 +24,7 @@ import io.ktor.client.HttpClient
 @Inject
 class ImageLoaderInitializer(
     private val platformConfig: PlatformConfig,
+    private val platformContext: PlatformContext,
     @ImageClient private val imageClient: HttpClient
 ) : AppInitializer {
 
@@ -30,6 +34,17 @@ class ImageLoaderInitializer(
             ImageLoader.Builder(context)
                 .crossfade(700)
                 .useExistingImageAsPlaceholder(true)
+                .memoryCache {
+                    MemoryCache.Builder()
+                        .maxSizePercent(context, 0.25)
+                        .build()
+                }
+                .diskCache {
+                    DiskCache.Builder()
+                        .directory(imageCacheDirectory(platformContext))
+                        .maxSizePercent(0.25)
+                        .build()
+                }
                 .components {
                     add(KtorNetworkFetcherFactory(httpClient = { imageClient }))
                 }
