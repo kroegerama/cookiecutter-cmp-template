@@ -1,50 +1,26 @@
 package {{ cookiecutter.namespace }}
 
-import co.touchlab.kermit.Logger
-import co.touchlab.kermit.Severity
-import coil3.ImageLoader
-import coil3.SingletonImageLoader
-import coil3.compose.useExistingImageAsPlaceholder
-import coil3.network.ktor3.KtorNetworkFetcherFactory
-import coil3.request.crossfade
-import coil3.util.DebugLogger
-import {{ cookiecutter.namespace }}.api.pokeapi.Api
-import com.kroegerama.kmp.kaiteki.Initializer
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ContributesIntoSet
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
-import dev.zacsweers.metro.createGraph
+import {{ cookiecutter.namespace }}.core.PlatformConfig
+import dev.zacsweers.metro.createGraphFactory
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
+@OptIn(ExperimentalAtomicApi::class)
 object Init {
-    val appGraph by lazy { createGraph<AppGraph>() }
 
-    fun initAll(isDebug: Boolean) {
-        initKermit(isDebug)
-        appGraph.initializers.forEach { it.init(isDebug) }
-    }
+    private val graphRef = AtomicReference<AppGraph?>(null)
 
-    private fun initKermit(isDebug: Boolean) {
-        Logger.setMinSeverity(
-            if (isDebug) Severity.Verbose else Severity.Warn
-        )
-    }
-}
+    val appGraph: AppGraph
+        get() = checkNotNull(graphRef.load()) { "Init.initAll() must run before the graph is accessed" }
 
-@ContributesIntoSet(AppScope::class)
-@SingleIn(AppScope::class)
-@Inject
-class ImageLoaderInitializer : Initializer {
-    override fun init(isDebug: Boolean) {
-        SingletonImageLoader.setSafe { context ->
-            ImageLoader.Builder(context)
-                .crossfade(700)
-                .useExistingImageAsPlaceholder(true)
-                .components {
-                    add(KtorNetworkFetcherFactory(httpClient = { Api.client }))
-                }
-                .logger(if (isDebug) DebugLogger() else null)
-                .build()
-        }
+    fun initAll(isDebug: Boolean) = initAll(PlatformConfig(isDebug = isDebug))
+
+    fun initAll(platformConfig: PlatformConfig) {
+        if (graphRef.load() != null) return
+        val graph = createGraphFactory<AppGraph.Factory>().create(platformConfig)
+        if (!graphRef.compareAndSet(null, graph)) return
+
+        graph.initializers.sortedBy { it.order }.forEach { it.init() }
+        graph.observers.forEach { it.start() }
     }
 }

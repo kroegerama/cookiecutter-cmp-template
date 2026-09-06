@@ -4,14 +4,13 @@ import arrow.core.getOrElse
 import co.touchlab.kermit.Logger
 import com.jetbrains.kmpapp.api.model.ApiConfig
 import com.jetbrains.kmpapp.api.pokeapi.Api
-import com.kroegerama.kmp.kaiteki.Initializer
-import com.kroegerama.openapi.kmp.gen.companion.PlatformHttpClientEngineConfig
+import com.jetbrains.kmpapp.core.AppInitializer
+import com.jetbrains.kmpapp.core.PlatformConfig
 import com.kroegerama.openapi.kmp.gen.companion.createPlatformHttpClient
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.auth.Auth
@@ -26,23 +25,22 @@ import io.ktor.client.request.HttpRequest
 @Inject
 class ApiInitializer(
     private val apiConfig: ApiConfig,
-    private val sessionStore: SessionStore
-) : Initializer {
+    private val sessionStore: SessionStore,
+    private val platformConfig: PlatformConfig
+) : AppInitializer {
 
-    override fun init(isDebug: Boolean) {
+    override fun init() {
         Api.baseUrl = apiConfig.baseUrl
         updateClient()
     }
 
-    fun updateClient(
-        localDecorator: HttpClientConfig<PlatformHttpClientEngineConfig>.() -> Unit = {}
-    ) {
+    private fun updateClient() {
         Api.updateClient(
-            withLogging = true,
+            withLogging = platformConfig.isDebug,
             createHttpClient = { apiDecorator ->
                 createPlatformHttpClient {
                     apiDecorator()
-                    localDecorator()
+                    applyDecorators(platformConfig.httpClientDecorators)
                 }
             }
         ) {

@@ -1,13 +1,15 @@
 package {{ cookiecutter.namespace }}
 
 import androidx.lifecycle.ViewModel
-import {{ cookiecutter.namespace }}.api.ApiInitializer
+import {{ cookiecutter.namespace }}.core.AppInitializer
+import {{ cookiecutter.namespace }}.core.AppObserver
+import {{ cookiecutter.namespace }}.core.PlatformConfig
 import {{ cookiecutter.namespace }}.ui.scaffold.AppSnackbarController
-import com.kroegerama.kmp.kaiteki.Initializer
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
@@ -17,9 +19,14 @@ import kotlin.reflect.KClass
 
 @DependencyGraph(AppScope::class)
 interface AppGraph : ViewModelGraph {
-    val initializers: Set<Initializer>
-    val apiInitializer: ApiInitializer
+    val initializers: Set<AppInitializer>
+    val observers: Set<AppObserver>
     val snackbarController: AppSnackbarController
+
+    @DependencyGraph.Factory
+    fun interface Factory {
+        fun create(@Provides platformConfig: PlatformConfig): AppGraph
+    }
 }
 
 @Inject

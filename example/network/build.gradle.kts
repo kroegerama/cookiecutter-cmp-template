@@ -42,7 +42,7 @@ kotlin {
             implementation(libs.kermit)
 
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.kmpgen.companion)
+            api(libs.kmpgen.companion)
         }
         androidMain.dependencies {
         }
