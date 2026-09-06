@@ -16,7 +16,7 @@ actual fun createDataStore(context: PlatformContext, fileName: String): DataStor
         serializer = PreferencesFileSerializer,
     ) {
         val tmpDir = File(System.getProperty("java.io.tmpdir"))
-        tmpDir.resolve("datastore/$fileName").also {
+        tmpDir.resolve("com.jetbrains.kmpapp/datastore/$fileName").also {
             Logger.d { "data store> $it" }
         }
     },
