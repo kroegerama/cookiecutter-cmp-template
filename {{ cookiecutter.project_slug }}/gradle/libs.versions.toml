@@ -19,7 +19,7 @@ kotlinx-collections-immutable = "0.5.2"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 kermit = "2.1.0"
-metro = "1.4.2"
+metro = "1.4.3"
 undercouch-download = "5.7.0"
 slf4j-simple = "2.0.19"
 
