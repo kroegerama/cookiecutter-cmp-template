@@ -1,9 +1,15 @@
 import re
 import sys
 
+app_name = {{ cookiecutter.app_name | tojson }}
 application_id = "{{ cookiecutter.application_id }}"
 namespace = "{{ cookiecutter.namespace }}"
 min_sdk = {{ cookiecutter.min_sdk }}
+
+if not app_name.strip() or re.search(r'["\\/]', app_name):
+    print(f"ERROR: '{app_name}' is not a valid app name.")
+    print('Must not be empty or contain ", \\ or /')
+    sys.exit(1)
 
 if not re.match(r"^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*){2,}$", application_id):
     print(f"ERROR: '{application_id}' is not a valid application ID.")
@@ -26,6 +32,6 @@ for segment in namespace.split("."):
         print(f"ERROR: Namespace segment '{segment}' is a Kotlin keyword.")
         sys.exit(1)
 
-if not (21 <= min_sdk <= 36):
-    print(f"ERROR: minSdk {min_sdk} is out of range (21-36).")
+if not (23 <= min_sdk <= 37):
+    print(f"ERROR: minSdk {min_sdk} is out of range (23-37).")
     sys.exit(1)

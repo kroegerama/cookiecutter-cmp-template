@@ -8,7 +8,16 @@
 *.conf text eol=lf
 *.json text eol=lf
 *.py text eol=lf
+*.keep text eol=lf
+*.swift text eol=lf
+*.pbxproj text eol=lf
+*.plist text eol=lf
+*.xcconfig text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+.gitattributes text eol=lf
 *.bat text eol=crlf
 gradlew text eol=lf
 *.jar binary
+*.png binary
 *.webp binary

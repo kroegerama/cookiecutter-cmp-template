@@ -7,8 +7,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -16,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.jetbrains.kmpapp.api.SessionStore
 import com.jetbrains.kmpapp.api.pokeapi.api.PokemonApi
 import com.jetbrains.kmpapp.controller.ProgressController
@@ -61,14 +60,11 @@ private data class StartScreenActions(
     val onLogout: () -> Unit = {}
 )
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 private fun StartScreenContent(
     actions: StartScreenActions,
     greeting: String
 ) {
-    val scaffoldSceneScope = LocalListDetailSceneScope.current
-
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier.fillMaxSize()
@@ -96,7 +92,7 @@ private fun StartScreenContent(
                 onClick = dropUnlessResumed {
                     scope.launch {
                         val r = PokemonApi.pokemonList()
-                        println("findPets> ${r.map { it.data }}")
+                        Logger.d { "pokemonList> ${r.map { it.data }}" }
                     }
                 },
                 text = "API"
@@ -105,7 +101,6 @@ private fun StartScreenContent(
                 onClick = dropUnlessResumed { actions.onLogout() },
                 text = "Logout"
             )
-            Text("scaffoldSceneScope> $scaffoldSceneScope")
         }
     }
 }

@@ -21,9 +21,8 @@ import coil3.compose.SubcomposeAsyncImage
 import com.jetbrains.kmpapp.ui.navigation.Navigator
 import com.jetbrains.kmpapp.ui.navigation.Route
 import com.jetbrains.kmpapp.ui.theme.AppTheme
-import com.kroegerama.kmp.kaiteki.compose.components.ButtonSmall
+import com.kroegerama.kmp.kaiteki.ExperimentalKaitekiApi
 import com.kroegerama.kmp.kaiteki.compose.components.OutlinedButtonSmall
-import com.kroegerama.kmp.kaiteki.compose.components.TextButtonSmall
 import com.kroegerama.kmp.kaiteki.compose.feature.blurHash
 
 @Composable
@@ -44,7 +43,7 @@ data class ImageScreenActions(
     val onNavigateBack: () -> Unit = {}
 )
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalKaitekiApi::class)
 @Composable
 private fun ImageScreenContent(
     actions: ImageScreenActions
@@ -64,7 +63,6 @@ private fun ImageScreenContent(
                 )
             }
             Text("Details", Modifier.safeDrawingPadding())
-            Text("scaffoldSceneScope> $scaffoldSceneScope")
 
             SubcomposeAsyncImage(
                 model = "https://images-assets.nasa.gov/image/SLS_KSC_Artemis%20II%20Rollout%201172026_20/SLS_KSC_Artemis%20II%20Rollout%201172026_20~orig.jpg",

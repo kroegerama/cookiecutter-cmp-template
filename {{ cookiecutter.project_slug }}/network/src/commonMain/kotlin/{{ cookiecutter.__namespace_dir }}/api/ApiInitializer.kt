@@ -54,6 +54,7 @@ class ApiInitializer(
             }
             install(Auth) {
                 bearer {
+                    nonCancellableRefresh = true
                     loadTokens {
                         sessionStore.getBearer()
                     }
@@ -73,7 +74,6 @@ class ApiInitializer(
     }
 
     private suspend fun handleClientRequestException(cause: ClientRequestException, request: HttpRequest) {
-        val response = cause.response
         Logger.d(cause) { "handleClientRequestException" }
     }
 

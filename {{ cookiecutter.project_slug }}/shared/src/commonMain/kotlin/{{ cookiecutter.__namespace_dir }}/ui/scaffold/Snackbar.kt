@@ -28,6 +28,6 @@ class AppSnackbarController : SnackbarController() {
     )
 }
 
-val LocalSnackbarController: ProvidableCompositionLocal<SnackbarController> = compositionLocalOf {
+val LocalSnackbarController: ProvidableCompositionLocal<AppSnackbarController> = compositionLocalOf {
     error("No SnackbarController provided.")
 }

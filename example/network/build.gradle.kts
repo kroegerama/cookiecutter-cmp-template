@@ -11,6 +11,10 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+
     android {
         namespace = "com.jetbrains.kmpapp.api"
         compileSdk {
@@ -22,13 +26,14 @@ kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
         }
-        androidResources {
-            enable = true
-        }
         enableCoreLibraryDesugaring = true
     }
 
-    jvm()
+    jvm {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_21
+        }
+    }
 
     iosArm64()
     iosSimulatorArm64()
@@ -43,6 +48,8 @@ kotlin {
 
             implementation(libs.kotlinx.serialization.json)
             api(libs.kmpgen.companion)
+            implementation(libs.bundles.ktor)
+            implementation(libs.bundles.arrow)
         }
         androidMain.dependencies {
         }
@@ -53,7 +60,6 @@ kotlin {
 
 dependencies {
     coreLibraryDesugaring(libs.desugar)
-    androidRuntimeClasspath(libs.compose.ui.tooling)
 }
 
 val specInfos = listOf(

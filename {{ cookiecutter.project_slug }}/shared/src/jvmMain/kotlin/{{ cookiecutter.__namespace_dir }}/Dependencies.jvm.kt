@@ -2,6 +2,7 @@ package {{ cookiecutter.namespace }}
 
 import {{ cookiecutter.namespace }}.model.AppVersion
 import com.kroegerama.kmp.kaiteki.PlatformContext
+import com.kroegerama.kmp.kaiteki.platformContext
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -11,7 +12,7 @@ import dev.zacsweers.metro.Provides
 @BindingContainer
 object PlatformBindings {
     @Provides
-    fun providePlatformContext(): PlatformContext = PlatformContext.INSTANCE
+    fun providePlatformContext(): PlatformContext = platformContext
 
     @Provides
     fun provideAppVersion(): AppVersion {

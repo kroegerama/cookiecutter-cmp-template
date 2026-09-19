@@ -1,5 +1,5 @@
 [versions]
-agp = "9.4.0"
+agp = "9.4.1"
 kotlin = "2.4.20"
 androidx-activity = "1.13.0"
 androidx-datastore = "1.2.1"
@@ -19,7 +19,8 @@ kotlinx-collections-immutable = "0.5.2"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 kermit = "2.2.0"
-metro = "1.4.3"
+ktor = "3.6.0"
+metro = "1.4.4"
 undercouch-download = "5.7.0"
 slf4j-simple = "2.0.19"
 
@@ -60,6 +61,9 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-encoding = { module = "io.ktor:ktor-client-encoding", version.ref = "ktor" }
 metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j-simple" }
 
@@ -103,4 +107,9 @@ metro = [
 coil = [
     "coil-compose",
     "coil-ktor3"
+]
+ktor = [
+    "ktor-client-auth",
+    "ktor-client-core",
+    "ktor-client-encoding"
 ]

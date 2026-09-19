@@ -25,7 +25,7 @@ You will be prompted for:
 | App name           | `My App`                   | Display name of the app                                  |
 | Application ID     | `com.example.myapp`        | Lowercase, 3+ dot-separated segments                     |
 | Kotlin namespace   | _(same as application ID)_ | Lowercase, 2+ dot-separated segments, no Kotlin keywords |
-| Minimum SDK        | `29`                       | Android only, must be between 21 and 36                  |
+| Minimum SDK        | `29`                       | Android only, must be between 23 and 37                  |
 | Target folder name | _(derived from app name)_  | Folder where the project is generated                    |
 
 ## What's Included

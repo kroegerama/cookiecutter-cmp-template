@@ -15,8 +15,7 @@
         ".gitattributes",
         ".editorconfig",
         "*.xcassets",
-        "Info.plist",
-        "project.pbxproj"
+        "Info.plist"
     ],
     "__prompts__": {
         "app_name": "App name",

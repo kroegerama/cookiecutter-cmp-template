@@ -9,14 +9,13 @@ import androidx.datastore.preferences.core.PreferencesFileSerializer
 import androidx.datastore.preferences.core.emptyPreferences
 import co.touchlab.kermit.Logger
 import com.kroegerama.kmp.kaiteki.PlatformContext
-import java.io.File
+import com.kroegerama.kmp.kaiteki.dataDirectory
 
 actual fun createDataStore(context: PlatformContext, fileName: String): DataStore<Preferences> = PreferenceDataStoreFactory.create(
     storage = FileStorage(
         serializer = PreferencesFileSerializer,
     ) {
-        val tmpDir = File(System.getProperty("java.io.tmpdir"))
-        tmpDir.resolve("{{ cookiecutter.application_id }}/datastore/$fileName").also {
+        (context.dataDirectory / "datastore" / fileName).toFile().also {
             Logger.d { "data store> $it" }
         }
     },

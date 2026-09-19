@@ -1,6 +1,7 @@
 package {{ cookiecutter.namespace }}
 
 import com.kroegerama.kmp.kaiteki.PlatformContext
+import com.kroegerama.kmp.kaiteki.cacheDirectory
 import okio.Path
 
-expect fun imageCacheDirectory(context: PlatformContext): Path
+fun imageCacheDirectory(context: PlatformContext): Path = context.cacheDirectory / "image_cache"
