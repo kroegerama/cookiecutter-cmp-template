@@ -34,6 +34,7 @@ import com.jetbrains.kmpapp.ui.theme.AppTheme
 import com.jetbrains.kmpapp.ui.theme.dimensions
 import com.kroegerama.kmp.kaiteki.compose.components.ButtonSmall
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun LoadingDialog(
@@ -97,7 +98,7 @@ private fun LoadingDialogPreview() {
 
             LaunchedEffect(show) {
                 if (show) {
-                    delay(4000)
+                    delay(4.seconds)
                     show = false
                 }
             }

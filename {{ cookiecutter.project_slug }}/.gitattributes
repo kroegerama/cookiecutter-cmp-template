@@ -7,6 +7,11 @@
 *.pro text eol=lf
 *.conf text eol=lf
 *.json text eol=lf
+*.keep text eol=lf
+*.swift text eol=lf
+*.pbxproj text eol=lf
+*.plist text eol=lf
+*.xcconfig text eol=lf
 *.bat text eol=crlf
 gradlew text eol=lf
 *.jar binary

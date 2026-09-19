@@ -8,7 +8,6 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
-import io.ktor.http.Url
 
 @ContributesTo(AppScope::class)
 @BindingContainer
