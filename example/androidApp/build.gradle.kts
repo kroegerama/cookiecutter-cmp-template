@@ -19,8 +19,8 @@ android {
         targetSdk {
             version = release(37)
         }
-        versionCode = 1
-        versionName = "0.9.0"
+        versionCode = providers.gradleProperty("app.versionCode").get().toInt()
+        versionName = providers.gradleProperty("app.versionName").get()
     }
 
     androidResources {

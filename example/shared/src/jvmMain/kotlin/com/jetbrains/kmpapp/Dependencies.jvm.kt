@@ -7,6 +7,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
+import java.util.Properties
 
 @ContributesTo(AppScope::class)
 @BindingContainer
@@ -16,10 +17,12 @@ object PlatformBindings {
 
     @Provides
     fun provideAppVersion(): AppVersion {
+        val properties = Properties()
+        PlatformBindings::class.java.getResourceAsStream("/app-version.properties")?.use(properties::load)
         return AppVersion(
-            versionName = "todo",
-            versionCode = "todo",
-            applicationId = "todo"
+            versionName = properties.getProperty("versionName", ""),
+            versionCode = properties.getProperty("versionCode", ""),
+            applicationId = properties.getProperty("applicationId", "")
         )
     }
 }
