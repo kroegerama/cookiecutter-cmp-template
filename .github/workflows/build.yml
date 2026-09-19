@@ -38,6 +38,10 @@ jobs:
           java-version: 21
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew :shared:compileKotlinIosSimulatorArm64 :network:compileKotlinIosSimulatorArm64
+      - name: Build iosApp (links the Kotlin framework)
+        run: >
+          xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug
+          -destination 'generic/platform=iOS Simulator' ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build
 
   template:
     runs-on: ubuntu-latest

@@ -55,7 +55,7 @@ kotlin {
 //            version = from("2.4.0"),
 //            products = listOf(product("Wormholy")),
 //        )
-//        iosMinimumDeploymentTarget.set("16.6")
+//        iosMinimumDeploymentTarget.set("18.5")
 //    }
 
 //    iosArm64()
