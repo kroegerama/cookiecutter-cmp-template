@@ -25,7 +25,7 @@ import io.ktor.client.HttpClient
 class ImageLoaderInitializer(
     private val platformConfig: PlatformConfig,
     private val platformContext: PlatformContext,
-    @ImageClient private val imageClient: HttpClient
+    @ImageClient private val imageClient: Lazy<HttpClient>
 ) : AppInitializer {
 
     @OptIn(ExperimentalCoilApi::class)
@@ -46,7 +46,7 @@ class ImageLoaderInitializer(
                         .build()
                 }
                 .components {
-                    add(KtorNetworkFetcherFactory(httpClient = { imageClient }))
+                    add(KtorNetworkFetcherFactory(httpClient = { imageClient.value }))
                 }
                 .logger(if (platformConfig.isDebug) DebugLogger() else null)
                 .build()
